@@ -9,8 +9,8 @@ public class OpenAPIConfig {
     public OpenAPI memoloopApi() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("The Price Is Right API")
-                        .description("API REST pour gérer les produits et leurs prix")
+                        .title("MemoLoop API")
+                        .description("API REST pour gérer les decks et les flashcards")
                         .version("1.0.0"));
     }
 }

@@ -1,0 +1,63 @@
+<section class="page study-page">
+  <a routerLink="/" class="back-link">← Back to decks</a>
+
+  @if (learningDeck(); as ld) {
+    <header class="study-header">
+      <h1>Studying: {{ ld.learnedDeck.name }}</h1>
+      <p class="muted">{{ studiedCount() }} studied so far</p>
+    </header>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="muted center">Loading…</p>
+  } @else if (finished()) {
+    <div class="finished">
+      <h2>All done!</h2>
+      <p class="muted">You've reviewed every card in this deck.</p>
+      <a class="primary button" routerLink="/">Back to decks</a>
+    </div>
+  } @else {
+    @if (currentCard(); as sc) {
+      <article class="flashcard" [class.revealed]="revealed()" (click)="!revealed() && reveal()">
+        <div class="side front">
+          <span class="label">Word</span>
+          <span class="big">{{ sc.card.word }}</span>
+          @if (!revealed()) {
+            <span class="hint muted">Click to reveal translation</span>
+          }
+        </div>
+        @if (revealed()) {
+          <div class="side back">
+            <span class="label">Translation</span>
+            <span class="big">{{ sc.card.translation }}</span>
+          </div>
+        }
+      </article>
+
+      @if (revealed()) {
+        <div class="rating">
+          <p class="muted center">How well did you know it?</p>
+          <div class="rating-buttons">
+            @for (level of knowledgeLevels; track level.value) {
+              <button
+                class="rating-btn"
+                [attr.data-level]="level.value"
+                (click)="rate(level.value)"
+                [disabled]="saving()"
+              >
+                <span class="rating-label">{{ level.label }}</span>
+                <span class="rating-hint">{{ level.hint }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <button class="primary reveal-btn" (click)="reveal()">Reveal</button>
+      }
+    }
+  }
+</section>

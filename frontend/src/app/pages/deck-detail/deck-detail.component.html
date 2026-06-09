@@ -1,0 +1,79 @@
+<section class="page">
+  <a routerLink="/" class="back-link">← Back to decks</a>
+
+  @if (loading()) {
+    <p class="muted">Loading deck…</p>
+  } @else if (error()) {
+    <div class="error">{{ error() }}</div>
+  } @else {
+    @if (deck(); as d) {
+    <header class="page-header row">
+      <div>
+        <h1>{{ d.name }}</h1>
+        <p class="muted">{{ d.cards.length }} card{{ d.cards.length === 1 ? '' : 's' }}</p>
+      </div>
+      <div class="actions">
+        <button
+          class="ghost"
+          (click)="startQuiz()"
+          [disabled]="startingQuiz() || d.cards.length < 2"
+          [title]="d.cards.length < 2 ? 'Need at least 2 cards' : 'Take a multiple-choice quiz'"
+        >
+          {{ startingQuiz() ? 'Starting…' : 'Start quiz' }}
+        </button>
+        <button
+          class="primary"
+          (click)="startSession()"
+          [disabled]="startingSession() || d.cards.length === 0"
+          [title]="d.cards.length === 0 ? 'Add cards first' : 'Start a study session'"
+        >
+          {{ startingSession() ? 'Starting…' : 'Start studying' }}
+        </button>
+      </div>
+    </header>
+
+    <section class="card-section">
+      <h2>Add a card</h2>
+      <form class="card-form" (ngSubmit)="addCard()">
+        <input
+          type="text"
+          placeholder="Word"
+          [(ngModel)]="newWord"
+          name="newWord"
+          [disabled]="addingCard()"
+        />
+        <input
+          type="text"
+          placeholder="Translation"
+          [(ngModel)]="newTranslation"
+          name="newTranslation"
+          [disabled]="addingCard()"
+        />
+        <button
+          type="submit"
+          [disabled]="addingCard() || !newWord.trim() || !newTranslation.trim()"
+        >
+          {{ addingCard() ? 'Adding…' : 'Add card' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="card-section">
+      <h2>Cards</h2>
+      @if (d.cards.length === 0) {
+        <div class="empty">No cards yet — add one above.</div>
+      } @else {
+        <ul class="card-list">
+          @for (card of d.cards; track card.id) {
+            <li class="flash-card">
+              <span class="word">{{ card.word }}</span>
+              <span class="arrow">→</span>
+              <span class="translation">{{ card.translation }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+    }
+  }
+</section>

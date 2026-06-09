@@ -1,0 +1,43 @@
+<section class="page">
+  <header class="page-header">
+    <h1>Your decks</h1>
+    <p class="muted">Build a deck, fill it with cards, then learn them.</p>
+  </header>
+
+  <form class="create-form" (ngSubmit)="create()">
+    <input
+      type="text"
+      placeholder="New deck name (e.g. Spanish basics)"
+      [(ngModel)]="newDeckName"
+      name="newDeckName"
+      [disabled]="creating()"
+    />
+    <button type="submit" [disabled]="creating() || !newDeckName.trim()">
+      {{ creating() ? 'Creating…' : 'Create deck' }}
+    </button>
+  </form>
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="muted">Loading decks…</div>
+  } @else if (decks().length === 0) {
+    <div class="empty">No decks yet. Create your first one above.</div>
+  } @else {
+    <ul class="deck-grid">
+      @for (deck of decks(); track deck.id) {
+        <li class="deck-card">
+          <a class="deck-link" [routerLink]="['/decks', deck.id]">
+            <h2>{{ deck.name }}</h2>
+            <span class="muted small">#{{ deck.id }}</span>
+          </a>
+          <button class="danger ghost" (click)="remove(deck)" aria-label="Delete deck">
+            Delete
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

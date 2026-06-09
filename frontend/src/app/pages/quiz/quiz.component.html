@@ -1,0 +1,89 @@
+<section class="page quiz-page">
+  @if (quiz(); as q) {
+    <a [routerLink]="['/decks', q.deck.id]" class="back-link">← Back to deck</a>
+  } @else {
+    <a routerLink="/" class="back-link">← Back to decks</a>
+  }
+
+  @if (loading()) {
+    <p class="muted center">Loading quiz…</p>
+  } @else if (error()) {
+    <div class="error">{{ error() }}</div>
+  } @else {
+    @if (quiz(); as q) {
+    <header class="quiz-header">
+      <h1>{{ q.deck.name }}</h1>
+      <p class="muted">
+        @if (showingResult()) {
+          Quiz complete
+        } @else {
+          Question {{ currentIndex() + 1 }} of {{ q.totalQuestions }}
+        }
+      </p>
+      <div class="progress-bar" aria-hidden="true">
+        <div class="progress-fill" [style.width.%]="progressPercentage()"></div>
+      </div>
+    </header>
+
+    @if (showingResult()) {
+      <div class="result-card">
+        <p class="result-percent">{{ scorePercentage() }}%</p>
+        <p class="result-score">{{ q.score }} / {{ q.totalQuestions }} correct</p>
+        <p class="result-message">
+          @if (scorePercentage() >= 90) {
+            Outstanding!
+          } @else if (scorePercentage() >= 70) {
+            Great work.
+          } @else if (scorePercentage() >= 50) {
+            Not bad — keep practicing.
+          } @else {
+            Plenty of room to grow. Try again!
+          }
+        </p>
+        <div class="result-actions">
+          <button class="primary" (click)="retry()" [disabled]="loading()">Play again</button>
+          <a class="button ghost" [routerLink]="['/decks', q.deck.id]">Back to deck</a>
+        </div>
+      </div>
+    } @else {
+      @if (currentQuestion(); as cq) {
+      <article class="question-card">
+        <p class="prompt-label">Translate</p>
+        <h2 class="prompt">{{ cq.prompt }}</h2>
+
+        <div class="choices">
+          @for (choice of cq.choices; track choice.cardId) {
+            <button
+              type="button"
+              class="choice"
+              [class.correct]="cq.answered && choice.cardId === cq.correctCardId"
+              [class.wrong]="cq.answered && choice.cardId === cq.selectedCardId && !cq.correct"
+              [class.dimmed]="cq.answered && choice.cardId !== cq.correctCardId && choice.cardId !== cq.selectedCardId"
+              [disabled]="cq.answered || submitting()"
+              (click)="selectChoice(choice.cardId)"
+            >
+              {{ choice.translation }}
+            </button>
+          }
+        </div>
+
+        @if (cq.answered) {
+          <div class="feedback" [class.correct]="cq.correct" [class.wrong]="!cq.correct">
+            @if (cq.correct) {
+              <span>✓ Correct!</span>
+            } @else {
+              <span>✗ Not quite.</span>
+            }
+          </div>
+          <button class="primary next-btn" (click)="next()">
+            {{ isLastQuestion() ? 'See result' : 'Next question →' }}
+          </button>
+        }
+      </article>
+
+      <p class="score-line muted center">Score so far: {{ q.score }} / {{ q.totalQuestions }}</p>
+      }
+    }
+    }
+  }
+</section>

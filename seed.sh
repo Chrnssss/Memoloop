@@ -2,8 +2,6 @@
 set -e
 API=http://localhost:8080
 
-# Remove the smoke-test deck so we start clean.
-curl -sS -X DELETE "$API/decks?id=1" >/dev/null || true
 
 create_deck() {
   curl -sS -X POST -H "Content-Type: application/json; charset=utf-8" \
